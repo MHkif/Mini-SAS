@@ -1,6 +1,4 @@
-package com.jdbc.model;
-
-import com.jdbc.model.Livre;
+package app.models;
 
 import java.util.Date;
 

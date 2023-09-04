@@ -1,4 +1,4 @@
-package com.jdbc.model;
+package app.models;
 
 public class Bibliothecaire {
     private int id;

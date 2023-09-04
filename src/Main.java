@@ -1,5 +1,4 @@
-import com.controllers.Navigator;
-
+import app.controllers.Navigator;
 import java.util.Scanner;
 
 public class Main {
