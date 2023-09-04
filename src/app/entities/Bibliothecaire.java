@@ -1,4 +1,4 @@
-package app.models;
+package app.entities;
 
 public class Bibliothecaire {
     private int id;

@@ -1,7 +1,7 @@
 package app.controllers;
 
-import app.models.Livre;
-import app.models.LivreEmpruntes;
+import app.entities.Livre;
+import app.entities.LivreEmpruntes;
 
 public class Navigator {
 
@@ -51,5 +51,6 @@ public class Navigator {
         }
 
     }
+
 
 }
