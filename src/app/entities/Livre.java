@@ -5,7 +5,7 @@ public class Livre {
     private String auteur;
     private String titre;
     private int isbn;
-    private int status;
+    private int status = 1;
     private int quantite;
 
     public int getId() {
@@ -55,7 +55,7 @@ public class Livre {
     public void setQuantite(int quantite) {
         this.quantite = quantite;
     }
-
+/*
     public Livre ajouter(Livre livre)
     {
          return this;
@@ -81,5 +81,8 @@ public class Livre {
     public Livre afficherLivres(){
         return new Livre();
     }
+
+    */
+
 
 }
