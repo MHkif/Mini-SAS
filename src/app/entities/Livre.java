@@ -56,8 +56,9 @@ public class Livre {
         this.quantite = quantite;
     }
 
-    public Livre ajouter(){
-        return new Livre();
+    public Livre ajouter(Livre livre)
+    {
+         return this;
     }
 
     public boolean supprimer(int id){
