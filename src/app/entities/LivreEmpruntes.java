@@ -1,15 +1,11 @@
-package com.jdbc.model;
-
-import com.jdbc.model.Livre;
+package app.entities;
 
 import java.util.Date;
 
 public class LivreEmpruntes {
     private int id;
-
     private String emprunteur;
     private Date date;
-
     private Date retour;
 
     public int getId() {
@@ -27,7 +23,6 @@ public class LivreEmpruntes {
     public void setId(int id) {
         this.id = id;
     }
-
 
     public Date getDate() {
         return date;

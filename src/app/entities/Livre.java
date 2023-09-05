@@ -1,4 +1,4 @@
-package com.jdbc.model;
+package app.entities;
 
 public class Livre {
     private int id;
@@ -56,8 +56,9 @@ public class Livre {
         this.quantite = quantite;
     }
 
-    public Livre ajouter(){
-        return new Livre();
+    public Livre ajouter(Livre livre)
+    {
+         return this;
     }
 
     public boolean supprimer(int id){
