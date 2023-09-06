@@ -66,7 +66,7 @@ public class Navigator {
         Livre livre = new Livre();
         Scanner scanner = new Scanner(System.in);
         System.out.println("----------------------------------------------");
-        System.out.println("\n-> Pour Continuer cliquer sur Entrer , Entrer 0 pour retour au menu ?");
+        System.out.println("\n-> Pour Continuer cliquer sur Entrer , Entrer 0 pour revenir au menu ?");
         if(scanner.nextLine().equals("0")){
             Helpers.clearScreen();
             Helpers.opening();
@@ -147,7 +147,6 @@ public class Navigator {
         }
         System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
         String scanner = new Scanner(System.in).nextLine();
-
            Helpers.clearScreen();
            Helpers.opening();
 
