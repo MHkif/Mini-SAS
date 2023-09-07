@@ -4,7 +4,8 @@ import java.util.Date;
 
 public class LivreEmpruntes {
     private int id;
-    private String emprunteur;
+    private Emprunteur emprunteur;
+    private Livre livre;
     private Date date;
     private Date retour;
 
@@ -12,11 +13,11 @@ public class LivreEmpruntes {
         return id;
     }
 
-    public String getEmprunteur() {
+    public Emprunteur getEmprunteur() {
         return emprunteur;
     }
 
-    public void setEmprunteur(String emprunteur) {
+    public void setEmprunteur(Emprunteur emprunteur) {
         this.emprunteur = emprunteur;
     }
 
@@ -40,19 +41,13 @@ public class LivreEmpruntes {
         this.retour = retour;
     }
 
-    public boolean emprunter(int id){
-        return true;
+    public Livre getLivre() {
+        return livre;
     }
 
-    public boolean retourner(int id){
-        return true;
+    public void setLivre(Livre livre) {
+        this.livre = livre;
     }
 
-    public void genererUnRapport(){
-        return;
-    }
 
-    public Livre afficherLivresEmpruntes(){
-        return new Livre();
-    }
 }

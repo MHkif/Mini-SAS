@@ -6,8 +6,6 @@ public class Livre {
     private String titre;
     private int isbn;
     private int status = 1;
-    private int quantite;
-
     public int getId() {
         return id;
     }
@@ -48,41 +46,8 @@ public class Livre {
         this.status = status;
     }
 
-    public int getQuantite() {
-        return quantite;
-    }
 
-    public void setQuantite(int quantite) {
-        this.quantite = quantite;
-    }
-/*
-    public Livre ajouter(Livre livre)
-    {
-         return this;
-    }
 
-    public boolean supprimer(int id){
-        return true;
-    }
-
-    public Livre modifier(int id){
-        return new Livre();
-    }
-
-    // You need a Union Type here
-    public Livre rechercher(String slag){
-        return new Livre();
-    }
-
-    public Livre afficherLivre(){
-        return new Livre();
-    }
-
-    public Livre afficherLivres(){
-        return new Livre();
-    }
-
-    */
 
 
 }
