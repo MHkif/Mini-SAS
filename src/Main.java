@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Navigator navigator = new Navigator();
-        Helpers.opening();
         navigator.apply();
     }
 

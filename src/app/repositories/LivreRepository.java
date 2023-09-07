@@ -11,6 +11,73 @@ public class LivreRepository {
 
     Database db  = new Database();
 
+
+    public ArrayList<Livre> afficherLivresDisponible() throws SQLException {
+        ArrayList<Livre> livres = new ArrayList<Livre>();
+        String sql = "SELECT * FROM `livre` WHERE status = 1";
+
+        try(Connection connection = db.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql)){
+
+            while (resultSet.next()){
+                Livre livre = new Livre();
+                livre.setId(resultSet.getInt("id"));
+                livre.setTitre(resultSet.getString("titre"));
+                livre.setAuteur(resultSet.getString("auteur"));
+                livre.setIsbn(resultSet.getInt("isbn"));
+                livre.setStatus(resultSet.getInt("status"));
+                livres.add(livre);
+            }
+
+        }
+        return livres;
+    }
+
+    public ArrayList<Livre> afficherLivresEmpruntes() throws SQLException {
+        ArrayList<Livre> livres = new ArrayList<Livre>();
+        String sql = "SELECT * FROM `livre` WHERE status = 0";
+
+        try(Connection connection = db.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql)){
+
+            while (resultSet.next()){
+                Livre livre = new Livre();
+                livre.setId(resultSet.getInt("id"));
+                livre.setTitre(resultSet.getString("titre"));
+                livre.setAuteur(resultSet.getString("auteur"));
+                livre.setIsbn(resultSet.getInt("isbn"));
+                livre.setStatus(resultSet.getInt("status"));
+                livres.add(livre);
+            }
+
+        }
+        return livres;
+    }
+
+    public ArrayList<Livre> afficherLivresPerdu() throws SQLException {
+        ArrayList<Livre> livres = new ArrayList<Livre>();
+        String sql = "SELECT * FROM `livre` WHERE status = 2";
+
+        try(Connection connection = db.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql)){
+
+            while (resultSet.next()){
+                Livre livre = new Livre();
+                livre.setId(resultSet.getInt("id"));
+                livre.setTitre(resultSet.getString("titre"));
+                livre.setAuteur(resultSet.getString("auteur"));
+                livre.setIsbn(resultSet.getInt("isbn"));
+                livre.setStatus(resultSet.getInt("status"));
+                livres.add(livre);
+            }
+
+        }
+        return livres;
+    }
+
     public Livre ajouter(Livre livre) throws SQLException {
         String sql = "INSERT INTO livre(titre, auteur, isbn, status) VALUES(?,?,?,?) ;";
 
@@ -88,30 +155,6 @@ public class LivreRepository {
 
     }
 
-
-
-    public ArrayList<Livre> afficherLivres() throws SQLException {
-        ArrayList<Livre> livres = new ArrayList<Livre>();
-        String sql = "SELECT * FROM `livre` WHERE status = 1";
-
-        try(Connection connection = db.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql)){
-
-            while (resultSet.next()){
-                Livre livre = new Livre();
-                livre.setId(resultSet.getInt("id"));
-                livre.setTitre(resultSet.getString("titre"));
-                livre.setAuteur(resultSet.getString("auteur"));
-                livre.setIsbn(resultSet.getInt("isbn"));
-                livre.setStatus(resultSet.getInt("status"));
-                livres.add(livre);
-            }
-
-        }
-        return livres;
-    }
-
     public Livre getLivreByIsbn(int isbn) throws SQLException {
         String sql = "SELECT * FROM livre WHERE isbn = " + Integer.valueOf(isbn).toString();
         Livre livre = new Livre();
@@ -133,12 +176,19 @@ public class LivreRepository {
 
     }
 
-    public Boolean livreDisponibilite(int isbn) throws SQLException{
-       Livre livre =  this.getLivreByIsbn(isbn);
-       if(livre.getStatus() == 1){
-           return true;
-       }else{
-           return false;
-       }
+    public Boolean livreDisponibilite(Livre livre, int status) throws SQLException {
+        String sql = "UPDATE livre SET status = "+ status+" WHERE isbn = " + livre.getIsbn() + " ;";
+
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement();) {
+            int rows = statement.executeUpdate(sql);
+            if (rows > 0) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
     }
 }
