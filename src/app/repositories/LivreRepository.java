@@ -155,6 +155,28 @@ public class LivreRepository {
 
     }
 
+    public Livre rechercherByIsbn(int isbn) throws SQLException {
+        String sql = "SELECT * FROM `livre` WHERE isbn = "+isbn +" ;";
+
+        Livre livre = new Livre();
+        try(Connection connection = db.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql)){
+
+            while (resultSet.next()){
+
+                livre.setId(resultSet.getInt("id"));
+                livre.setTitre(resultSet.getString("titre"));
+                livre.setAuteur(resultSet.getString("auteur"));
+                livre.setIsbn(resultSet.getInt("isbn"));
+                livre.setStatus(resultSet.getInt("status"));
+
+            }
+        }
+        return livre;
+
+    }
+
     public Livre getLivreByIsbn(int isbn) throws SQLException {
         String sql = "SELECT * FROM livre WHERE isbn = " + Integer.valueOf(isbn).toString();
         Livre livre = new Livre();

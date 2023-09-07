@@ -261,11 +261,41 @@ public class Navigator {
 
     }
 
-    public Livre rechercherLivre() throws SQLException{
-        System.out.println("\n-> Rechercher :");
-        String slag  = scanner.nextLine();
-       Livre livre =  livreRepository.rechercher(slag);
-        return livre;
+    public void rechercherLivre() throws SQLException{
+        Livre livre = new Livre();
+        boolean isConfirmed = true;
+        while ( isConfirmed ) {
+            System.out.println("\n-> Voulez-vous rechercher par ?");
+            System.out.print("\n1-> Isbn .\n2-> Titre, Auteur . \n0 -> Revenir au menu .\n->  ");
+            String confirm = scanner.nextLine();
+
+            switch (Integer.parseInt(confirm)){
+                case 0:
+                    isConfirmed = false;
+                    break;
+                case 1:
+                    System.out.print("-> Rechercher par Isbn : ");
+                    String isbn = scanner.nextLine();
+                    livre =  livreRepository.rechercherByIsbn(Integer.parseInt(isbn));
+                    Helpers.afficherLivre(livre);
+                    System.out.print("\n-> Cliquez sur n'importe quelle touche pour continer ...");
+                    scanner.nextLine();
+                    break;
+                case 2:
+                    System.out.print("-> Rechercher par Isbn : ");
+                    String slag = scanner.nextLine();
+                    livre =  livreRepository.rechercher(slag);
+                    Helpers.afficherLivre(livre);
+                    System.out.print("\n-> Cliquez sur n'importe quelle touche pour continer ...");
+                    scanner.nextLine();
+                    break;
+            }
+
+
+
+        }
+        Helpers.clearScreen();
+        Helpers.opening();
     }
 
     public void emprunter() throws SQLException {
