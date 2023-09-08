@@ -10,16 +10,14 @@ public class Helpers {
         System.out.println("\n\t\t\t\t\t Bienvenue à la Bibliothèque nationale \t\t\t\t\t\n");
         System.out.println("\nDans notre bibliothèque, vous trouverez tous les livres que vous recherchez .\n");
         System.out.println("Choisis un option :");
-        System.out.println("1 - Afficher les livres disponible .");
-        System.out.println("2 - Afficher les livres empruntés .");
-        //System.out.println("10 - Afficher les livres perdu .");
-        System.out.println("3 - Ajouter un livre .");
-        System.out.println("4 - Modifier un livre .");
-        System.out.println("5 - Supprimer un livre .");
-        System.out.println("6 - Rechercher un livre .");
-        System.out.println("7 - Emprunter un livre .");
-        System.out.println("8 - Retourner un livre .");
-        System.out.println("9 - Générer un rapport .");
+        System.out.println("1 - Afficher les livres .");
+        System.out.println("2 - Ajouter un livre .");
+        System.out.println("3 - Modifier un livre .");
+        System.out.println("4 - Supprimer un livre .");
+        System.out.println("5 - Rechercher un livre .");
+        System.out.println("6 - Emprunter un livre .");
+        System.out.println("7 - Retourner un livre .");
+        System.out.println("8 - Générer un rapport .");
         System.out.println("0 - Quitter .");
         System.out.print("\n->  ");
 

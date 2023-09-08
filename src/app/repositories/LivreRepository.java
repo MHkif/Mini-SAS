@@ -134,7 +134,7 @@ public class LivreRepository {
 
     public Livre rechercher(String slag) throws SQLException {
         String sql = "SELECT * FROM `livre` WHERE titre LIKE " +
-                "'%"+slag+"%' OR "+  "'%"+slag+"%' ;";
+                "'%"+slag+"%' OR auteur LIKE "+  "'%"+slag+"%' ;";
 
         Livre livre = new Livre();
         try(Connection connection = db.getConnection();
@@ -196,17 +196,19 @@ public class LivreRepository {
 
     }
 
-    public Boolean livreDisponibilite(Livre livre, int status) throws SQLException {
-        String sql = "UPDATE livre SET status = "+ status+" WHERE isbn = " + livre.getIsbn() + " ;";
+    public void livrePerdu() throws SQLException {
+        String sql = "UPDATE livre " +
+                "SET status = 2 " +
+                "WHERE isbn IN ( " +
+                "    SELECT livreIsbn " +
+                "    FROM livreempruntes " +
+                "    WHERE retour < CURRENT_TIMESTAMP() " +
+                ");";
 
         try (Connection connection = db.getConnection();
              Statement statement = connection.createStatement();) {
             int rows = statement.executeUpdate(sql);
-            if (rows > 0) {
-                return true;
-            } else {
-                return false;
-            }
+
 
         }
 

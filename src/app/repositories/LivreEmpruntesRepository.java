@@ -19,11 +19,9 @@ public class LivreEmpruntesRepository {
             preparedStatement.setInt(2, livre.getIsbn());
 
             if(preparedStatement.executeUpdate() > 0){
-                System.out.println("Le livre a été emprunté par "+ emprunteur.getUsername() + " avec succès .");
-
                 return true;
             }else {
-                System.out.println("L'empruntation de livre a échoué ...");
+
                 return false;
             }
         }
@@ -38,10 +36,10 @@ public class LivreEmpruntesRepository {
         {
             int rows = statement.executeUpdate(sql);
             if(rows > 0){
-                System.out.println("Livre a été supprimé avec succés .");
+
                 return true;
             }else {
-                System.out.println("La suppression du livre a échouer  ....");
+
                 return false;
             }
         }
