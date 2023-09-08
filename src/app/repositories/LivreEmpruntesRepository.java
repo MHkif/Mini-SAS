@@ -5,10 +5,7 @@ import app.entities.Emprunteur;
 import app.entities.Livre;
 import app.entities.LivreEmpruntes;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class LivreEmpruntesRepository {
 
@@ -32,15 +29,47 @@ public class LivreEmpruntesRepository {
         }
     }
 
-    public LivreEmpruntes retourner(Emprunteur emprunteur, Livre livre){
-        return new LivreEmpruntes();
+    public boolean retourner(Emprunteur emprunteur, Livre livre) throws SQLException{
+        String sql = "DELETE FROM livreempruntes WHERE membership = " + emprunteur.getMemberShip() +
+                " AND livreIsbn = " + livre.getIsbn() + "  ;";
+
+        try (Connection connection = db.getConnection();
+        Statement statement = connection.createStatement();)
+        {
+            int rows = statement.executeUpdate(sql);
+            if(rows > 0){
+                System.out.println("Livre a été supprimé avec succés .");
+                return true;
+            }else {
+                System.out.println("La suppression du livre a échouer  ....");
+                return false;
+            }
+        }
+
     }
 
     public void genererUnRapport(){
         return;
     }
 
-    public Livre afficherLivreEmpruntes(Livre livre){
-        return new Livre();
+    public LivreEmpruntes afficherLivreEmpruntes(Livre livre) throws SQLException{
+        String sql = "SELECT * FROM `livreempruntes` WHERE livreIsbn = "+livre.getIsbn() +" ;";
+
+        LivreEmpruntes livreEmpruntes = new LivreEmpruntes();
+        EmprunteurRepository emprunteurRepository = new EmprunteurRepository();
+        LivreRepository livreRepository = new LivreRepository();
+        try(Connection connection = db.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql)){
+
+            while (resultSet.next()){
+                livreEmpruntes.setId(resultSet.getInt("id"));
+                livreEmpruntes.setEmprunteur(emprunteurRepository.getEmprunteurByMemberShip(resultSet.getInt("memberShip")));
+                livreEmpruntes.setLivre(livreRepository.getLivreByIsbn(resultSet.getInt("livreIsbn")));
+                livreEmpruntes.setDate(resultSet.getTimestamp("date"));
+                livreEmpruntes.setRetour(resultSet.getTimestamp("retour"));
+            }
+        }
+        return livreEmpruntes;
     }
 }

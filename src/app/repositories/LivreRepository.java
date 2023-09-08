@@ -124,9 +124,9 @@ public class LivreRepository {
             Statement statement = connection.createStatement();){
             int rows = statement.executeUpdate(sql);
             if(rows > 0){
-                System.out.println("Livre deleted successfully .");
+                System.out.println("Livre a été supprimé avec succés .");
             }else {
-                System.out.println("delete livre failed ....");
+                System.out.println("La suppression du livre a échouer  ....");
             }
         }
         return true;
@@ -164,13 +164,11 @@ public class LivreRepository {
             ResultSet resultSet = statement.executeQuery(sql)){
 
             while (resultSet.next()){
-
                 livre.setId(resultSet.getInt("id"));
                 livre.setTitre(resultSet.getString("titre"));
                 livre.setAuteur(resultSet.getString("auteur"));
                 livre.setIsbn(resultSet.getInt("isbn"));
                 livre.setStatus(resultSet.getInt("status"));
-
             }
         }
         return livre;

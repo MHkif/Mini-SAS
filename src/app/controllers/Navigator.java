@@ -3,6 +3,7 @@ package app.controllers;
 import app.Helpers;
 import app.entities.Emprunteur;
 import app.entities.Livre;
+import app.entities.LivreEmpruntes;
 import app.repositories.EmprunteurRepository;
 import app.repositories.LivreEmpruntesRepository;
 import app.repositories.LivreRepository;
@@ -38,7 +39,7 @@ public class Navigator {
                    case 7 -> this.emprunter();
                    case 8 -> this.retourner();
                    case 9 -> this.genererUnRapport();
-                   case 10 -> this.afficherLivresPerdu();
+                  // case 10 -> this.afficherLivresPerdu();
                }
 
            }
@@ -315,7 +316,7 @@ public class Navigator {
 
                 if (livreEmpruntesRepository.emprunter(emprunteur, livre)){
 
-                    livreRepository.livreDisponibilite(livre, 0);
+                   // livreRepository.livreDisponibilite(livre, 0);
                 }else{
                     System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
                     scanner.nextLine();
@@ -393,6 +394,7 @@ public class Navigator {
         Helpers.clearScreen();
         System.out.print("\nEntrer Isbn de Livre : ");
         Emprunteur emprunteur;
+        LivreEmpruntes livreEmpruntes;
         String isbn = scanner.nextLine();
         Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
         Helpers.afficherLivre(livre);
@@ -400,90 +402,33 @@ public class Navigator {
         if(livre.getId() > 0){
 
             if(livre.getStatus() == 0){
-                System.out.println("Ce Livre a été emprunté par"+"en la date de : "+" .");
-            }else if (livre.getStatus() > 0){
+                livreEmpruntes = livreEmpruntesRepository.afficherLivreEmpruntes(livre);
+                emprunteur = livreEmpruntes.getEmprunteur();
+                System.out.println("\nCe Livre a été emprunté par "+ emprunteur.getUsername() + "en la date de : "+
+                        livreEmpruntes.getDate() +" avec une date de retour : "+ livreEmpruntes.getRetour() +" .");
 
-            }
-
-            System.out.print("\nEntrer MemberShip d'emprunteur : ");
-            String memberShip = scanner.nextLine();
-            emprunteur = emprunteurRepository.getEmprunteurByMemberShip(Integer.parseInt(memberShip));
-
-            if(emprunteur.getMemberShip() > 0){
-
-                if (livreEmpruntesRepository.emprunter(emprunteur, livre)){
-
-                    livreRepository.livreDisponibilite(livre, 0);
-                }else{
-                    System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
-                    scanner.nextLine();
-                    Helpers.clearScreen();
-                    Helpers.opening();
-                }
-
-            }else{
-
-                boolean isValid = true;
-                while(isValid){
-                    System.out.print("""
-                           Ce Emprunteur n'est pas existé dans la base données .\s
-                           1-> Créer un nouveau emprunteur .
-                           2-> Annuler et revenir au menu .
-                           ->\s""");
-                    String option = scanner.nextLine();
-
-                    if(Integer.parseInt(option) == 1){
-                        System.out.println("\n-> Entrer les informations du nouveau emprunteur : ");
-                        System.out.print("-> MemberShip : ");
-                        memberShip  = scanner.nextLine();
-                        System.out.print("-> Username : ");
-                        String username  = scanner.nextLine();
-                        System.out.print("-> CIN d'emprunteur : ");
-                        String cin  = scanner.nextLine();
-
-                        System.out.println("\nLe nouveau emprunteur :");
-                        System.out.println("MemberShip : "+memberShip+
-                                " \nUsername : "+username+" ."+
-                                " \nCIN : "+cin+" .");
-
-                        boolean isConfirmed = true;
-                        while ( isConfirmed ) {
-                            System.out.println("\n-> Confirmmer vous l'exécution ?");
-                            System.out.print("\n1-> yes .\n2-> no  \n->  ");
-                            String confirm = scanner.nextLine();
-
-                            if(Integer.parseInt(confirm) == 1){
-                                emprunteur.setMemberShip(Integer.parseInt(memberShip));
-                                emprunteur.setUsername(username);
-                                emprunteur.setCin(cin);
-
-                                emprunteurRepository.ajouter(emprunteur);
-                                livreEmpruntesRepository.emprunter(emprunteur,livre);
-                                isConfirmed = false;
-                            }else if(Integer.parseInt(confirm) == 2){
-                                emprunteur = new Emprunteur();
-                                Helpers.clearScreen();
-                                Helpers.opening();
-                                isConfirmed = false;
-                            }
-                            else {
-                                System.out.println("->Incorrecte option ...");
-                            }
-                        }
-
-                        isValid = false;
-                    }else if (Integer.parseInt(option) == 2){
-                        Helpers.clearScreen();
-                        Helpers.opening();
-                        isValid = false;
-                    }else {
-                        System.out.println("->Incorrecte option ...");
+                boolean isConfirmed = true;
+                while ( isConfirmed ) {
+                    System.out.println("-> Confirmez-vous le retour du livre ?");
+                    System.out.print("\n1-> yes .\n2-> no  \n->  ");
+                    String confirm = scanner.nextLine();
+                    if(Integer.parseInt(confirm) == 1){
+                        livreEmpruntesRepository.retourner(emprunteur,livre);
+                       // livreRepository.livreDisponibilite(livre, 1);
+                        isConfirmed = false;
+                    }else if(Integer.parseInt(confirm) == 2){
+                        System.out.println("\nLes Modifcations sont annulé .\n");
+                        isConfirmed = false;
                     }
                 }
+            }else if (livre.getStatus() == 1){
+                System.out.println("Vous pouvez pas retourner ce Livre car est disponible .");
+            }else {
+                System.out.println("Ce livre a été perdu vous pouvez le retourner .");
             }
 
         }else{
-            System.out.println("->Ce Livre est encore indisponible pour le moment . Essayez d'emprunter un autre livre .");
+            System.out.println("->Ce Livre n'éxiste pas . ");
         }
     }
 

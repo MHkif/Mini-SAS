@@ -12,7 +12,7 @@ public class Helpers {
         System.out.println("Choisis un option :");
         System.out.println("1 - Afficher les livres disponible .");
         System.out.println("2 - Afficher les livres empruntés .");
-        System.out.println("10 - Afficher les livres perdu .");
+        //System.out.println("10 - Afficher les livres perdu .");
         System.out.println("3 - Ajouter un livre .");
         System.out.println("4 - Modifier un livre .");
         System.out.println("5 - Supprimer un livre .");
