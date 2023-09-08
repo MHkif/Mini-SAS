@@ -207,7 +207,7 @@ public class LivreRepository {
 
         try (Connection connection = db.getConnection();
              Statement statement = connection.createStatement();) {
-            int rows = statement.executeUpdate(sql);
+         statement.executeUpdate(sql);
 
 
         }

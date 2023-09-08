@@ -38,7 +38,8 @@ public class Navigator {
                    case 5 -> this.rechercherLivre();
                    case 6 -> this.emprunter();
                    case 7 -> this.retourner();
-                   case 8 -> this.genererUnRapport();
+                   case 8 -> this.genererStatistiques();
+                   
                }
 
            }
@@ -463,7 +464,7 @@ public class Navigator {
     }
 
 
-    public void genererUnRapport(){
+    public void genererStatistiques(){
 
     }
 

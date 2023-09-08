@@ -17,7 +17,7 @@ public class Helpers {
         System.out.println("5 - Rechercher un livre .");
         System.out.println("6 - Emprunter un livre .");
         System.out.println("7 - Retourner un livre .");
-        System.out.println("8 - Générer un rapport .");
+        System.out.println("8 - Générer les statistiques.");
         System.out.println("0 - Quitter .");
         System.out.print("\n->  ");
 
