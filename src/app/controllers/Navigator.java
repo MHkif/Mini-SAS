@@ -8,7 +8,17 @@ import app.repositories.EmprunteurRepository;
 import app.repositories.LivreEmpruntesRepository;
 import app.repositories.LivreRepository;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -39,7 +49,6 @@ public class Navigator {
                    case 6 -> this.emprunter();
                    case 7 -> this.retourner();
                    case 8 -> this.genererStatistiques();
-                   
                }
 
            }
@@ -77,6 +86,7 @@ public class Navigator {
 
           }
     }
+
     public void afficherLivresDisponible() throws SQLException {
         System.out.println("\nLa liste des livres disponible : \n");
         if(livreRepository.afficherLivresDisponible().size() < 1){
@@ -95,7 +105,7 @@ public class Navigator {
     }
 
     public void afficherLivresEmpruntes() throws SQLException {
-        System.out.println("\nLa liste des livres empruntes : \n");
+        System.out.println("\nLa liste des livres empruntés : \n");
         if(livreRepository.afficherLivresEmpruntes().size() < 1){
             System.out.print("-> Il n'y a pas des livres dans la bibliotheque .");
         }else {
@@ -463,9 +473,70 @@ public class Navigator {
 
     }
 
+    public void genererStatistiques() throws SQLException{
 
-    public void genererStatistiques(){
+        System.out.printf("""
+                \nBienvenue à la Bibliothèque Nationale, l'endroit où la connaissance prend vie.
+                Voici les statistiques actuelles de notre bibliothèque :
+                                
+                Total des livres disponibles : %s
+                Total des livres empruntés : %S
+                Total des livres perdus : %S
+                """, livreRepository.afficherLivresDisponible().size(),
+                livreRepository.afficherLivresEmpruntes().size(),
+                livreRepository.afficherLivresPerdu().size());
 
+        Path currentRelativePath = Paths.get("");
+        String dirname = currentRelativePath.toAbsolutePath().toString();
+
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        //System.out.println("Time : "+ sdf.format(timestamp).replaceAll("\\s+",""));
+        String time;
+        time = sdf.format(ts).replaceAll("\\s+","").replaceAll(":", "_");
+        try {
+
+            File file = new File(dirname+"/src/statistiques/"+ time +".txt");
+            if (file.createNewFile()) {
+                try {
+                    FileWriter myWriter = new FileWriter(dirname+"/src/statistiques/"+ time +".txt");
+                    String s = "\nBienvenue à la Bibliothèque Nationale, l'endroit où la connaissance prend vie." +
+                            "\nVoici les statistiques actuelles de notre bibliothèque : " +
+                            "\nTotal des livres disponibles : " + livreRepository.afficherLivresDisponible().size() +  " ." +
+                            "\nTotal des livres empruntés : " + livreRepository.afficherLivresEmpruntes().size() +  " ."+
+                            "\nTotal des livres perdus : "+ livreRepository.afficherLivresPerdu().size() + " ." ;
+
+                    myWriter.write(s);
+                    myWriter.close();
+                    System.out.println("un nouveau fichier de statistiques a été généré : " + file.getName());
+                } catch (IOException e) {
+                    System.out.println("Une erreur s'est produite.");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Fichier déjà existant .");
+            }
+        } catch (IOException e) {
+            System.out.println("Une erreur s'est produite.");
+            e.printStackTrace();
+        }
+
+
+
+
+
+    }
+
+    public void afficherList(ArrayList<Livre> livres, String status)  throws SQLException{
+        System.out.println("\nLa liste des livres "+status+" : ");
+        if(livres.size() < 1){
+            System.out.print("-> Il n'y a pas des livres "+status+" dans la bibliotheque .");
+        }else {
+            for (Livre livre : livres) {
+                Helpers.afficherLivre(livre);
+                System.out.println();
+            }
+        }
     }
 
 }
