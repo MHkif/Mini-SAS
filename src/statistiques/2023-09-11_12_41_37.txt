@@ -1,0 +1,6 @@
+
+Bienvenue à la Bibliothèque Nationale, l'endroit où la connaissance prend vie.
+Voici les statistiques actuelles de notre bibliothèque : 
+Total des livres disponibles : 2
+Total des livres empruntés : 1
+Total des livres perdus : 0
