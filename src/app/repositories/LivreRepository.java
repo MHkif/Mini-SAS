@@ -2,7 +2,6 @@ package app.repositories;
 
 import app.Database;
 import app.entities.Livre;
-import com.sun.jdi.Value;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class LivreRepository {
             preparedStatement.setInt(4, livre.getStatus());
 
           if(preparedStatement.executeUpdate() > 0){
-              System.out.println("Livre created successfully .");
+              System.out.println("Le livre a été créer avec  succéss .");
           }else {
               System.out.println("Inserer livre failed ....");
           }
@@ -155,7 +154,7 @@ public class LivreRepository {
 
     }
 
-    public Livre rechercherByIsbn(int isbn) throws SQLException {
+    public Livre getLivreByIsbn(int isbn) throws SQLException {
         String sql = "SELECT * FROM `livre` WHERE isbn = "+isbn +" ;";
 
         Livre livre = new Livre();
@@ -175,28 +174,8 @@ public class LivreRepository {
 
     }
 
-    public Livre getLivreByIsbn(int isbn) throws SQLException {
-        String sql = "SELECT * FROM livre WHERE isbn = " + Integer.valueOf(isbn).toString();
-        Livre livre = new Livre();
-        try(Connection connection = db.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql)){
 
-            while (resultSet.next()){
-
-                livre.setId(resultSet.getInt("id"));
-                livre.setTitre(resultSet.getString("titre"));
-                livre.setAuteur(resultSet.getString("auteur"));
-                livre.setIsbn(resultSet.getInt("isbn"));
-                livre.setStatus(resultSet.getInt("status"));
-
-            }
-        }
-        return livre;
-
-    }
-
-    public void livrePerdu() throws SQLException {
+    public void declarerlivrePerdu() throws SQLException {
         String sql = "UPDATE livre " +
                 "SET status = 2 " +
                 "WHERE isbn IN ( " +

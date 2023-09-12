@@ -35,7 +35,7 @@ public class Navigator {
             boolean isRunning = true;
 
            while (isRunning){
-               livreRepository.livrePerdu();
+               livreRepository.declarerlivrePerdu();
                Helpers.opening();
                String option = scanner.nextLine();
 
@@ -193,66 +193,70 @@ public class Navigator {
         System.out.print("\nEntrer Isbn de Livre : ");
         String isbn = scanner.nextLine();
         Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
-        Helpers.afficherLivre(livre);
 
-        boolean continuer = true;
-        while (continuer){
+        if(livre.getId() > 0){
+            Helpers.afficherLivre(livre);
+            boolean continuer = true;
+            while (continuer){
 
-            System.out.println("""
+                System.out.println("""
 
                     Que Voulez-vous modifier dans ce livre :\s
                     1 -> Titre\s
                     2 -> Auteur\s
                     3 -> Status
                     0 -> Revenir au menu\s""");
-            System.out.print("-> Entrez une option : ");
+                System.out.print("-> Entrez une option : ");
 
-            String option = scanner.nextLine();
-            switch (Integer.parseInt(option)) {
-                case 1 -> {
-                    System.out.print("\nTitre : ");
-                    String titre = scanner.nextLine();
-                    livre.setTitre(titre);
-                }
-                case 2 -> {
-                    System.out.print("\nAuteur : ");
-                    String auteur = scanner.nextLine();
-                    livre.setAuteur(auteur);
-                }
-                case 3 -> Helpers.modifierStatus(scanner, livre);
-                case 0 -> {
-                    Helpers.clearScreen();
-
-                    continuer = false;
-                }
-            }
-
-            if(Integer.parseInt(option) != 0){
-
-                System.out.println("\nLe Livre Après la Modification :");
-                Helpers.afficherLivre(livre);
-                boolean isConfirmed = true;
-                while ( isConfirmed ) {
-                    System.out.println("\n-> Confirmmer vous l'exécution ?");
-                    System.out.print("\n1-> yes .\n2-> no  \n->  ");
-                    String confirm = scanner.nextLine();
-
-                    if(Integer.parseInt(confirm) == 1){
-                        livreRepository.modifier(livre);
-                        isConfirmed = false;
-                    }else if(Integer.parseInt(confirm) == 2){
-                        System.out.println("\nLes Modifcations sont annulé .\n");
-                        isConfirmed = false;
+                String option = scanner.nextLine();
+                switch (Integer.parseInt(option)) {
+                    case 1 -> {
+                        System.out.print("\nTitre : ");
+                        String titre = scanner.nextLine();
+                        livre.setTitre(titre);
                     }
+                    case 2 -> {
+                        System.out.print("\nAuteur : ");
+                        String auteur = scanner.nextLine();
+                        livre.setAuteur(auteur);
+                    }
+                    case 3 -> Helpers.modifierStatus(scanner, livre);
+                    case 0 -> {
+                        Helpers.clearScreen();
+
+                        continuer = false;
+                    }
+                }
+
+                if(Integer.parseInt(option) != 0){
+
+                    System.out.println("\nLe Livre Après la Modification :");
+                    Helpers.afficherLivre(livre);
+                    boolean isConfirmed = true;
+                    while ( isConfirmed ) {
+                        System.out.println("\n-> Confirmmer vous l'exécution ?");
+                        System.out.print("\n1-> yes .\n2-> no  \n->  ");
+                        String confirm = scanner.nextLine();
+
+                        if(Integer.parseInt(confirm) == 1){
+                            livreRepository.modifier(livre);
+                            isConfirmed = false;
+                        }else if(Integer.parseInt(confirm) == 2){
+                            System.out.println("\nLes Modifcations sont annulé .\n");
+                            isConfirmed = false;
+                        }
+                    }
+
                 }
 
             }
 
         }
-
-
-
-
+        else {
+            System.out.println("Il n'existe aucun livre correspondant au Isbn que vous avez fourni .");
+        }
+        System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
+        scanner.nextLine();
     }
 
     public void supprimerLivre() throws SQLException{
@@ -272,24 +276,24 @@ public class Navigator {
                 if(Integer.parseInt(confirm) == 1){
                     livreRepository.supprimer(Integer.parseInt(isbn));
                     isConfirmed = false;
-                }else if(Integer.parseInt(confirm) == 0){
-                    Helpers.clearScreen();
-                    Helpers.opening();
+                }else if(Integer.parseInt(confirm) == 2){
                     isConfirmed = false;
                 }
             }
 
         }else{
             System.out.println("Il n'y a pas de livre avec l'isbn de : "+isbn +" dans la bibliotheque .");
-            System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
-            scanner.nextLine();
+
         }
+
+        System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
+        scanner.nextLine();
 
 
     }
 
     public void rechercherLivre() throws SQLException{
-        Livre livre = new Livre();
+        Livre livre;
         boolean isConfirmed = true;
         while ( isConfirmed ) {
             System.out.println("\n-> Voulez-vous rechercher par ?");
@@ -303,7 +307,7 @@ public class Navigator {
                 case 1:
                     System.out.print("-> Rechercher par Isbn : ");
                     String isbn = scanner.nextLine();
-                    livre =  livreRepository.rechercherByIsbn(Integer.parseInt(isbn));
+                    livre =  livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
                     Helpers.afficherLivre(livre);
                     System.out.print("\n-> Cliquez sur n'importe quelle touche pour continer ...");
                     scanner.nextLine();
@@ -436,27 +440,37 @@ public class Navigator {
             if(livre.getStatus() == 0){
                 livreEmpruntes = livreEmpruntesRepository.afficherLivreEmpruntes(livre);
                 emprunteur = livreEmpruntes.getEmprunteur();
-                System.out.println("\nCe Livre a été emprunté par "+ emprunteur.getUsername() + " en la date de : "+
-                        livreEmpruntes.getDate() +" avec une date de retour : "+ livreEmpruntes.getRetour() +" .");
 
-                boolean isConfirmed = true;
-                while ( isConfirmed ) {
-                    System.out.println("-> Confirmez-vous le retour du livre ?");
-                    System.out.print("\n1-> yes .\n2-> no  \n->  ");
-                    String confirm = scanner.nextLine();
-                    if(Integer.parseInt(confirm) == 1){
+                System.out.print("\nEntrer your membership : ");
+                Emprunteur checkEmprunteur;
+                String checkMemberShip = scanner.nextLine();
 
-                        if (livreEmpruntesRepository.retourner(emprunteur,livre)){
-                            System.out.println("Le livre a été retourné avec succès .");
-                        }else{
-                            System.out.println("Échec du retour du livre  ....");
+                if(Integer.parseInt(checkMemberShip) == emprunteur.getMemberShip()){
 
+                    System.out.println("\nCe Livre a été emprunté par "+ emprunteur.getUsername() + " en la date de : "+
+                            livreEmpruntes.getDate() +" avec une date de retour : "+ livreEmpruntes.getRetour() +" .");
+
+                    boolean isConfirmed = true;
+                    while ( isConfirmed ) {
+                        System.out.println("-> Confirmez-vous le retour du livre ?");
+                        System.out.print("\n1-> yes .\n2-> no  \n->  ");
+                        String confirm = scanner.nextLine();
+                        if(Integer.parseInt(confirm) == 1){
+
+                            if (livreEmpruntesRepository.retourner(emprunteur,livre)){
+                                System.out.println("Le livre a été retourné avec succès .");
+                            }else{
+                                System.out.println("Échec du retour du livre  ....");
+
+                            }
+                            isConfirmed = false;
+                        }else if(Integer.parseInt(confirm) == 2){
+                            System.out.println("\nLes Modifcations sont annulé .\n");
+                            isConfirmed = false;
                         }
-                        isConfirmed = false;
-                    }else if(Integer.parseInt(confirm) == 2){
-                        System.out.println("\nLes Modifcations sont annulé .\n");
-                        isConfirmed = false;
                     }
+                }else {
+                    System.out.println("votre memberShip ne correspond pas à memberShip emprunteur de ce livre .");
                 }
             }else if (livre.getStatus() == 1){
                 System.out.println("Vous ne pouvez pas return ce livre car il est disponible .");

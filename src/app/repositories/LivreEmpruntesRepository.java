@@ -46,10 +46,6 @@ public class LivreEmpruntesRepository {
 
     }
 
-    public void genererUnRapport(){
-        return;
-    }
-
     public LivreEmpruntes afficherLivreEmpruntes(Livre livre) throws SQLException{
         String sql = "SELECT * FROM `livreempruntes` WHERE livreIsbn = "+livre.getIsbn() +" ;";
 
