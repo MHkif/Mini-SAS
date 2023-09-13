@@ -29,6 +29,7 @@ Vérifiez que la base de données et les tables ont été créées avec succès 
 
 # Exécution de l'application
  1 - Ouvrez le projet dans votre environnement de développement.
+ 
  2 - Testez la connectivité de la base de données pour vous assurer que l'application peut se connecter à votre base de 
      données MySQL avec succès. Vous pouvez le faire en lançant une méthode de connexion de test ou en exécutant un exemple 
      de requête.
