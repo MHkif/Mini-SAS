@@ -12,7 +12,7 @@ JDBC Driver : Téléchargez et incluez  MySQL JDBC driver dans votre projet. Vou
 
 # Installation
  1 - Clonez le dépôt ou téléchargez le code source de l'application sur votre machine locale.
-     git clone git
+     git clone https://github.com/MHkif/Mini-SAS.git
      
  2 - Ouvrez le projet dans votre environnement de développement Java IDE préféré (par exemple, IntelliJ IDEA, Eclipse).
 
