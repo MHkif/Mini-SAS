@@ -35,8 +35,10 @@ Vérifiez que la base de données et les tables ont été créées avec succès 
 
  - dans l'application, vous trouverez une classe appelée database qui est responsable de l'établissement de la connexion 
    entre votre application et  mysql database:
+
    
 public class Database {
+
     private static  final String Driver_PATH = "com.mysql.cj.jdbc.Driver";
     private static final String DATABASE_URL = "jdbc:mysql://localhost:3303/mini_sas_db";
     private static final String USERNAME ="username";
@@ -57,7 +59,8 @@ public class Database {
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
     }
-    }
+    
+ }
      
 
 # Utilisation
