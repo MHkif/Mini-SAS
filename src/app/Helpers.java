@@ -2,13 +2,19 @@ package app;
 
 import app.entities.Livre;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.Scanner;
 
 public class Helpers {
-    public static void opening(){
+    public static void  opening(){
         System.out.println();
-        System.out.println("\n\t\t\t\t\t Bienvenue à la Bibliothèque nationale \t\t\t\t\t\n");
+        System.out.println("|--------------------------------------------------------------------------------|");
+        System.out.println("\n|\t\t\t\t\t Bienvenue à la Bibliothèque nationale \t\t\t\t\t\t |\n");
+        System.out.println("|--------------------------------------------------------------------------------|");
         System.out.println("\nDans notre bibliothèque, vous trouverez tous les livres que vous recherchez .\n");
+    }
+
+    public static void options(){
         System.out.println("Choisis un option :");
         System.out.println("1 - Afficher les livres .");
         System.out.println("2 - Ajouter un livre .");
@@ -44,10 +50,8 @@ public class Helpers {
                 case 2:
                     System.out.println("Status : perdu .");
                     break;
-
             }
         }
-
     }
 
     public static void modifierStatus(Scanner scanner, Livre livre){
@@ -64,9 +68,7 @@ public class Helpers {
                 System.out.println("-> La Status a était modifié . ");
                 is_positive = false;
             }
-
         }
-
     }
 
 
@@ -74,7 +76,6 @@ public class Helpers {
                               "titre" , "auteur" , "isbn" , "status", "quantite"};
     public static boolean isInArrayString(String[] arr, String toCheckValue)
     {
-
         // using Linear Search method
         boolean exist = false;
         for (String element : arr) {
@@ -83,13 +84,11 @@ public class Helpers {
                 break;
             }
         }
-
         return exist;
     }
 
     private static void isInArrayInt(int[] arr, int toCheckValue)
     {
-
         boolean test = false;
         for (int element : arr) {
             if (element == toCheckValue) {
@@ -98,9 +97,33 @@ public class Helpers {
             }
         }
 
-        // Print the result
         System.out.println("Is " + toCheckValue
                 + " present in the array: " + test);
+    }
+
+
+    public static void backToMenu(Scanner scanner){
+        System.out.println("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .\n");
+        scanner.nextLine();
+    }
+
+    public static String intValidation(String isbn,String key, Scanner scanner){
+        if(!Validator.validInteger(isbn)){
+            boolean confirmIsbn = true;
+            while (confirmIsbn){
+                System.out.println("\n"+key+" doit être numérique  .");
+                System.out.print("-> Entrer "+key+" de Livre : ");
+                isbn  = scanner.nextLine();
+                if(Validator.validInteger(isbn)){
+                    confirmIsbn = false;
+                }else {
+                    confirmIsbn = true;
+                }
+            }
+        }
+            return isbn;
+
+
     }
 
 }

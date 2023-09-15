@@ -4,7 +4,13 @@ import app.Database;
 import app.entities.Livre;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class LivreRepository {
 
@@ -191,5 +197,40 @@ public class LivreRepository {
 
         }
 
+    }
+
+    public void genererStatistiques() throws SQLException{
+        Path currentRelativePath = Paths.get("");
+        String dirname = currentRelativePath.toAbsolutePath().toString();
+
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String time;
+        time = sdf.format(ts).replaceAll("\\s+","").replaceAll(":", "_");
+        try {
+
+            File file = new File(dirname+"/src/statistiques/"+ time +".txt");
+            if (file.createNewFile()) {
+                try {
+                    FileWriter myWriter = new FileWriter(dirname+"/src/statistiques/"+ time +".txt");
+                    String s = "\nBienvenue à la Bibliothèque Nationale, l'endroit où la connaissance prend vie." +
+                            "\nVoici les statistiques actuelles de notre bibliothèque : " +
+                            "\nTotal des livres disponibles : " + this.afficherLivresDisponible().size() +  " ." +
+                            "\nTotal des livres empruntés : " + this.afficherLivresEmpruntes().size() +  " ."+
+                            "\nTotal des livres perdus : "+ this.afficherLivresPerdu().size() + " ." ;
+
+                    myWriter.write(s);
+                    myWriter.close();
+                } catch (IOException e) {
+                    System.out.println("Une erreur s'est produite.");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Fichier déjà existant .");
+            }
+        } catch (IOException e) {
+            System.out.println("Une erreur s'est produite.");
+            e.printStackTrace();
+        }
     }
 }

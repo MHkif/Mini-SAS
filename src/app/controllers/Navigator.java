@@ -1,6 +1,8 @@
 package app.controllers;
 
 import app.Helpers;
+import app.Status;
+import app.Validator;
 import app.entities.Emprunteur;
 import app.entities.Livre;
 import app.entities.LivreEmpruntes;
@@ -8,18 +10,9 @@ import app.repositories.EmprunteurRepository;
 import app.repositories.LivreEmpruntesRepository;
 import app.repositories.LivreRepository;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Navigator {
@@ -28,37 +21,43 @@ public class Navigator {
     LivreRepository livreRepository = new LivreRepository();
     LivreEmpruntesRepository livreEmpruntesRepository = new LivreEmpruntesRepository();
     EmprunteurRepository emprunteurRepository = new EmprunteurRepository();
+
+
     public void apply(){
-        Scanner scanner = new Scanner(System.in);
+      Scanner scanner = new Scanner(System.in);
+       Helpers.opening();
         try {
 
-            boolean isRunning = true;
+           boolean isRunning = true;
 
            while (isRunning){
                livreRepository.declarerlivrePerdu();
-               Helpers.opening();
+               Helpers.options();
                String option = scanner.nextLine();
+               if(Validator.validInteger(option)){
 
-               switch (Integer.parseInt(option)) {
-                   case 0 -> isRunning = false;
-                   case 1 -> this.afficherLivres();
-                   case 2 -> this.ajouterLivre();
-                   case 3 -> this.modifierLivre();
-                   case 4 -> this.supprimerLivre();
-                   case 5 -> this.rechercherLivre();
-                   case 6 -> this.emprunter();
-                   case 7 -> this.retourner();
-                   case 8 -> this.genererStatistiques();
+                   switch (Integer.parseInt(option)) {
+                       case 0 -> isRunning = false;
+                       case 1 -> this.afficherLivres();
+                       case 2 -> this.ajouterLivre();
+                       case 3 -> this.modifierLivre();
+                       case 4 -> this.supprimerLivre();
+                       case 5 -> this.rechercherLivre();
+                       case 6 -> this.emprunter();
+                       case 7 -> this.retourner();
+                       case 8 -> this.genererStatistiques();
+                   }
+
                }
-
+               else{
+                   System.out.println("\nEntrée invalide , Choisir une option parmi les suivantes : ");
+               }
            }
 
         }catch (Exception e){
-            System.out.print("Entrez un nombre dans le menu . \n-> ");
-            this.apply();
+            System.out.println("Crashed : "+e);
         }
     }
-
 
     public void afficherLivres() throws  SQLException{
 
@@ -75,13 +74,17 @@ public class Navigator {
             System.out.print("-> Entrez une option : ");
 
             String option = scanner.nextLine();
-            switch (Integer.parseInt(option)) {
-                case 1 -> this.afficherLivresDisponible();
-                case 2 -> this.afficherLivresEmpruntes();
-                case 3 -> this.afficherLivresPerdu();
-                case 0 -> {
-                    continuer = false;
+            if (Validator.validInteger(option)) {
+                switch (Integer.parseInt(option)) {
+                    case 1 -> this.afficherLivresDisponible();
+                    case 2 -> this.afficherLivresEmpruntes();
+                    case 3 -> this.afficherLivresPerdu();
+                    case 0 -> {
+                        continuer = false;
+                    }
                 }
+            }else{
+                System.out.print("\nEntrée invalide , Choisir une option parmi les suivantes : ");
             }
 
           }
@@ -149,12 +152,38 @@ public class Navigator {
         }else{
 
             System.out.println("\n-> Entrer les informations du nouveau livre : ");
+
             System.out.print("\n-> Titre du livre : ");
             String titre  = scanner.nextLine();
             System.out.print("-> Auteur du livre : ");
+
             String auteur  = scanner.nextLine();
+            if(!Validator.validString(auteur)){
+                boolean confirmAutheur = true;
+                while (confirmAutheur){
+                    System.out.println("\nVous ne pouvez pas créer un nom d'auteur en utilisant des chiffres - utilisez des lettres :");
+                    System.out.print("-> Auteur du livre : ");
+                    auteur  = scanner.nextLine();
+                    if(Validator.validString(auteur)){
+                        confirmAutheur = false;
+                    }else {
+                        confirmAutheur = true;
+                    }
+                }
+            }
             System.out.print("-> ISBN du livre : ");
             String isbn  = scanner.nextLine();
+            if(!Validator.validInteger(isbn)){
+            boolean confirmIsbn = true;
+            while (confirmIsbn){
+                System.out.println("\nVous ne pouvez pas créer un Isbn en utilisant des letters - utilisez des chiffres :");
+                System.out.print("-> ISBN du livre : ");
+                isbn  = scanner.nextLine();
+                if(Validator.validInteger(isbn)){
+                    confirmIsbn = false;
+                }
+            }
+            }
 
             System.out.println("\nLe nouveau livre :");
             System.out.println("Titre : "+titre+
@@ -165,22 +194,22 @@ public class Navigator {
             while ( isConfirmed ) {
                 System.out.println("\n-> Confirmmer vous l'exécution ?");
                 System.out.print("\n1-> yes .\n2-> no  \n->  ");
-                String confirm = scanner.nextLine();
+                String confirmOption = scanner.nextLine();
 
-                if(Integer.parseInt(confirm) == 1){
+                if(Integer.parseInt(confirmOption) == 1){
                     livre.setTitre(titre);
                     livre.setAuteur(auteur);
                     livre.setIsbn(Integer.parseInt(isbn));
-
                     livreRepository.ajouter(livre);
-                    break;
-                }else if(Integer.parseInt(confirm) == 0){
+
+                    isConfirmed = false;
+                }else if(Integer.parseInt(confirmOption) == 2){
                     livre = new Livre();
-                    Helpers.clearScreen();
-                    Helpers.opening();
+                    System.out.println("\nAnnuler L'ajoute d'un nouveau livre .\n");
                     isConfirmed = false;
                 }
             }
+           Helpers.backToMenu(scanner);
         }
 
 
@@ -188,24 +217,39 @@ public class Navigator {
     }
 
     public void modifierLivre() throws SQLException{
-
-        Helpers.clearScreen();
-        System.out.print("\nEntrer Isbn de Livre : ");
+        System.out.println("\nIci, vous pouvez accéder et éditer des livres par isbn.");
+        System.out.print("-> Entrer Isbn de Livre : ");
         String isbn = scanner.nextLine();
-        Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
 
-        if(livre.getId() > 0){
+        if(!Validator.validInteger(isbn)){
+
+            boolean confirmIsbn = true;
+            while (confirmIsbn){
+                System.out.println("\nL'isbn doit être numérique  .");
+                System.out.print("->Entrer Isbn de Livre : ");
+                isbn  = scanner.nextLine();
+                if(Validator.validInteger(isbn)){
+                    confirmIsbn = false;
+                }else {
+                    confirmIsbn = true;
+                }
+            }
+
+
+        }
+
+        Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
+        if(livre.getId() > 0 ){
             Helpers.afficherLivre(livre);
             boolean continuer = true;
             while (continuer){
-
                 System.out.println("""
-
-                    Que Voulez-vous modifier dans ce livre :\s
-                    1 -> Titre\s
-                    2 -> Auteur\s
-                    3 -> Status
-                    0 -> Revenir au menu\s""");
+                        
+                        Que Voulez-vous modifier dans ce livre :\s
+                        1 -> Titre\s
+                        2 -> Auteur\s
+                        3 -> Status
+                        0 -> Revenir au menu\s""");
                 System.out.print("-> Entrez une option : ");
 
                 String option = scanner.nextLine();
@@ -250,21 +294,34 @@ public class Navigator {
                 }
 
             }
-
         }
         else {
             System.out.println("Il n'existe aucun livre correspondant au Isbn que vous avez fourni .");
         }
-        System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
-        scanner.nextLine();
+
+        Helpers.backToMenu(scanner);
     }
 
     public void supprimerLivre() throws SQLException{
-        Helpers.clearScreen();
         System.out.print("\nEntrer Isbn de Livre : ");
         String isbn = scanner.nextLine();
-        Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
 
+        if(!Validator.validInteger(isbn)){
+
+            boolean confirmIsbn = true;
+            while (confirmIsbn){
+                System.out.println("\nL'isbn doit être numérique  .");
+                System.out.print("->Entrer Isbn de Livre : ");
+                isbn  = scanner.nextLine();
+                if(Validator.validInteger(isbn)){
+                    confirmIsbn = false;
+                }else {
+                    confirmIsbn = true;
+                }
+            }
+        }
+
+        Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
         if(livre.getId() > 0){
             Helpers.afficherLivre(livre);
             boolean isConfirmed = true;
@@ -283,13 +340,9 @@ public class Navigator {
 
         }else{
             System.out.println("Il n'y a pas de livre avec l'isbn de : "+isbn +" dans la bibliotheque .");
-
         }
 
-        System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
-        scanner.nextLine();
-
-
+        Helpers.backToMenu(scanner);
     }
 
     public void rechercherLivre() throws SQLException{
@@ -298,35 +351,75 @@ public class Navigator {
         while ( isConfirmed ) {
             System.out.println("\n-> Voulez-vous rechercher par ?");
             System.out.print("\n1-> Isbn .\n2-> Titre, Auteur . \n0 -> Revenir au menu .\n->  ");
-            String confirm = scanner.nextLine();
+            String optionRecherche = scanner.nextLine();
 
-            switch (Integer.parseInt(confirm)){
-                case 0:
-                    isConfirmed = false;
-                    break;
-                case 1:
-                    System.out.print("-> Rechercher par Isbn : ");
-                    String isbn = scanner.nextLine();
-                    livre =  livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
-                    Helpers.afficherLivre(livre);
-                    System.out.print("\n-> Cliquez sur n'importe quelle touche pour continer ...");
-                    scanner.nextLine();
-                    break;
-                case 2:
-                    System.out.print("-> Rechercher par Isbn : ");
-                    String slag = scanner.nextLine();
-                    livre =  livreRepository.rechercher(slag);
-                    if(livre.getId() > 0){
-                        Helpers.afficherLivre(livre);
-                    }else {
-                        System.out.print("\n-> Il n'existe aucun livre correspondant au nom que vous avez fourni .");
+            if(Validator.validInteger(optionRecherche)) {
 
-                    }
 
-                    System.out.print("\n-> Cliquez sur n'importe quelle touche pour continer ...");
-                    scanner.nextLine();
-                    break;
-            }
+                switch (Integer.parseInt(optionRecherche)) {
+                    case 0:
+                        isConfirmed = false;
+                        break;
+                    case 1:
+                        System.out.print("-> Rechercher par Isbn : ");
+                        String isbn = scanner.nextLine();
+                        if(!Validator.validInteger(isbn)){
+                            boolean confirmIsbn = true;
+                            while (confirmIsbn){
+                                System.out.println("\nL'isbn doit être numérique  .");
+                                System.out.print("-> Entrer Isbn de Livre : ");
+                                isbn  = scanner.nextLine();
+                                if(Validator.validInteger(isbn)){
+                                    confirmIsbn = false;
+                                }else {
+                                    confirmIsbn = true;
+                                }
+                            }
+                        }
+
+                        livre = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
+
+                        if(livre.getIsbn() > 0){
+                            Helpers.afficherLivre(livre);
+                        } else {
+                            System.out.println("Il n'existe aucun livre correspondant au Isbn que vous avez fourni .");
+                        }
+
+                        System.out.print("\n-> Cliquez sur n'importe quelle touche pour continer ...");
+                        scanner.nextLine();
+                        break;
+                    case 2:
+                        System.out.print("-> Rechercher par Titre | Auteur : ");
+                        String slag = scanner.nextLine();
+
+                        if(!Validator.validString(slag)){
+                            boolean confirmSlag = true;
+                            while (confirmSlag){
+                                System.out.println("\nLa saisie doit être un texte valide  .");
+                                System.out.print("-> Entrer Titre | Auteur du Livre : ");
+                                slag  = scanner.nextLine();
+                                if(Validator.validString(slag)){
+                                    confirmSlag = false;
+                                }else {
+                                    confirmSlag = true;
+                                }
+                            }
+                        }
+
+                        livre = livreRepository.rechercher(slag);
+                        if (livre.getId() > 0) {
+                            Helpers.afficherLivre(livre);
+                        } else {
+                            System.out.print("\n-> Il n'existe aucun livre correspondant au nom que vous avez fourni .");
+
+                        }
+                        Helpers.backToMenu(scanner);
+                        break;
+                }
+
+            }else{
+                    System.out.print("\nEntrée invalide , Choisir une option parmi les suivantes : ");
+                }
 
 
 
@@ -334,32 +427,53 @@ public class Navigator {
     }
 
     public void emprunter() throws SQLException {
-        Helpers.clearScreen();
         System.out.print("\nEntrer Isbn de Livre : ");
         Emprunteur emprunteur;
         String isbn = scanner.nextLine();
+
+        if(!Validator.validInteger(isbn)){
+            boolean confirmIsbn = true;
+            while (confirmIsbn){
+                System.out.println("\nL'isbn doit être numérique  .");
+                System.out.print("-> Entrer Isbn de Livre : ");
+                isbn  = scanner.nextLine();
+                if(Validator.validInteger(isbn)){
+                    confirmIsbn = false;
+                }else {
+                    confirmIsbn = true;
+                }
+            }
+        }
         Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
        if(livre.getId() > 0){
            Helpers.afficherLivre(livre);
 
            if(livre.getStatus() > 0){
-               System.out.print("\nEntrer MemberShip d'emprunteur : ");
+               System.out.print("\n-> Entrer MemberShip d'emprunteur : ");
                String memberShip = scanner.nextLine();
+
+               if(!Validator.validInteger(memberShip)){
+                   boolean confirmIsbn = true;
+                   while (confirmIsbn){
+                       System.out.println("\nMemberShip doit être numérique  .");
+                       System.out.print("-> Entrer MemberShip d'emprunteur : ");
+                       memberShip  = scanner.nextLine();
+                       if(Validator.validInteger(memberShip)){
+                           confirmIsbn = false;
+                       }else {
+                           confirmIsbn = true;
+                       }
+                   }
+               }
                emprunteur = emprunteurRepository.getEmprunteurByMemberShip(Integer.parseInt(memberShip));
 
                if(emprunteur.getMemberShip() > 0){
-
                    if (livreEmpruntesRepository.emprunter(emprunteur, livre) ){
                        System.out.println("Le livre a été emprunté par "+ emprunteur.getUsername() + " avec succès .");
-
-
                    }else{
                        System.out.println("L'empruntation de livre a échoué ...");
-
                    }
-
                }else{
-
                    boolean isValid = true;
                    while(isValid){
                        System.out.print("""
@@ -369,48 +483,55 @@ public class Navigator {
                            ->\s""");
                        String option = scanner.nextLine();
 
-                       if(Integer.parseInt(option) == 1){
-                           System.out.println("\n-> Entrer les informations du nouveau emprunteur : ");
-                           System.out.print("-> MemberShip : ");
-                           memberShip  = scanner.nextLine();
-                           System.out.print("-> Username : ");
-                           String username  = scanner.nextLine();
-                           System.out.print("-> CIN d'emprunteur : ");
-                           String cin  = scanner.nextLine();
+                      if(Validator.validInteger(option)){
+                          if(Integer.parseInt(option) == 1){
+                              System.out.println("\n-> Entrer les informations du nouveau emprunteur : ");
+                              System.out.print("-> MemberShip : ");
+                              memberShip  = scanner.nextLine();
+                              System.out.print("-> Username : ");
+                              String username  = scanner.nextLine();
+                              System.out.print("-> CIN d'emprunteur : ");
+                              String cin  = scanner.nextLine();
 
-                           System.out.println("\nLe nouveau emprunteur :");
-                           System.out.println("MemberShip : "+memberShip+
-                                   " \nUsername : "+username+" ."+
-                                   " \nCIN : "+cin+" .");
+                              System.out.println("\nLe nouveau emprunteur :");
+                              System.out.println("MemberShip : "+memberShip+
+                                      " \nUsername : "+username+" ."+
+                                      " \nCIN : "+cin+" .");
 
-                           boolean isConfirmed = true;
-                           while ( isConfirmed ) {
-                               System.out.println("\n-> Confirmmer vous l'exécution ?");
-                               System.out.print("\n1-> yes .\n2-> no  \n->  ");
-                               String confirm = scanner.nextLine();
+                              boolean isConfirmed = true;
+                              while ( isConfirmed ) {
+                                  System.out.println("\n-> Confirmmer vous l'exécution ?");
+                                  System.out.print("\n1-> yes .\n2-> no  \n->  ");
+                                  String confirm = scanner.nextLine();
 
-                               if(Integer.parseInt(confirm) == 1){
-                                   emprunteur.setMemberShip(Integer.parseInt(memberShip));
-                                   emprunteur.setUsername(username);
-                                   emprunteur.setCin(cin);
+                                  if(Integer.parseInt(confirm) == 1){
+                                      emprunteur.setMemberShip(Integer.parseInt(memberShip));
+                                      emprunteur.setUsername(username);
+                                      emprunteur.setCin(cin);
 
-                                   emprunteurRepository.ajouter(emprunteur);
-                                   livreEmpruntesRepository.emprunter(emprunteur,livre);
-                                   isConfirmed = false;
-                               }else if(Integer.parseInt(confirm) == 2){
-                                   emprunteur = new Emprunteur();
-                                   isConfirmed = false;
-                               }
-                               else {
-                                   System.out.println("->Incorrecte option ...");
-                               }
-                           }
+                                      emprunteurRepository.ajouter(emprunteur);
+                                      livreEmpruntesRepository.emprunter(emprunteur,livre);
+                                      isConfirmed = false;
+                                  }else if(Integer.parseInt(confirm) == 2){
+                                      emprunteur = new Emprunteur();
+                                      isConfirmed = false;
+                                  }
+                                  else {
+                                      System.out.println("->Incorrecte option ...");
+                                  }
+                              }
 
-                           isValid = false;
-                       }else if (Integer.parseInt(option) == 2){
-                           isValid = false;
-                       }else {
-                           System.out.println("->Incorrecte option ...");
+                              isValid = false;
+                          }
+                          else if (Integer.parseInt(option) == 2){
+                              isValid = false;
+                          }
+                          else {
+                              System.out.println("\nEntrée invalide , Choisir une option parmi les suivantes : ");
+                          }
+                      }
+                        else {
+                           System.out.println("\nEntrée invalide , Choisir une option parmi les suivantes : ");
                        }
                    }
                }
@@ -422,8 +543,7 @@ public class Navigator {
        else {
            System.out.println("Il n'existe aucun livre correspondant au Isbn que vous avez fourni .");
        }
-        System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
-        scanner.nextLine();
+       Helpers.backToMenu(scanner);
     }
 
     public void retourner() throws SQLException{
@@ -432,42 +552,51 @@ public class Navigator {
         Emprunteur emprunteur;
         LivreEmpruntes livreEmpruntes;
         String isbn = scanner.nextLine();
+        isbn = Helpers.intValidation(isbn,"Isbn", scanner);
+
         Livre livre  = livreRepository.getLivreByIsbn(Integer.parseInt(isbn));
-        Helpers.afficherLivre(livre);
 
         if(livre.getId() > 0){
-
+            Helpers.afficherLivre(livre);
             if(livre.getStatus() == 0){
                 livreEmpruntes = livreEmpruntesRepository.afficherLivreEmpruntes(livre);
                 emprunteur = livreEmpruntes.getEmprunteur();
 
                 System.out.print("\nEntrer your membership : ");
-                Emprunteur checkEmprunteur;
+
                 String checkMemberShip = scanner.nextLine();
+                checkMemberShip = Helpers.intValidation(checkMemberShip, "membership", scanner);
 
                 if(Integer.parseInt(checkMemberShip) == emprunteur.getMemberShip()){
-
                     System.out.println("\nCe Livre a été emprunté par "+ emprunteur.getUsername() + " en la date de : "+
                             livreEmpruntes.getDate() +" avec une date de retour : "+ livreEmpruntes.getRetour() +" .");
 
                     boolean isConfirmed = true;
                     while ( isConfirmed ) {
-                        System.out.println("-> Confirmez-vous le retour du livre ?");
-                        System.out.print("\n1-> yes .\n2-> no  \n->  ");
+                        System.out.println("\n-> Confirmez-vous le retour du livre ?");
+                        System.out.print("1-> yes .\n2-> no  \n->  ");
                         String confirm = scanner.nextLine();
-                        if(Integer.parseInt(confirm) == 1){
+                        if (Validator.validInteger(confirm)) {
+                            switch (Integer.parseInt(confirm)) {
+                                case 1 -> {
+                                    if (livreEmpruntesRepository.retourner(emprunteur, livre)) {
+                                        System.out.println("Le livre a été retourné avec succès .");
+                                    } else {
+                                        System.out.println("Échec du retour du livre  ....");
 
-                            if (livreEmpruntesRepository.retourner(emprunteur,livre)){
-                                System.out.println("Le livre a été retourné avec succès .");
-                            }else{
-                                System.out.println("Échec du retour du livre  ....");
-
+                                    }
+                                    isConfirmed = false;
+                                }
+                                case 2 -> {
+                                    System.out.println("\nLes Modifcations sont annulé .\n");
+                                    isConfirmed = false;
+                                }
                             }
-                            isConfirmed = false;
-                        }else if(Integer.parseInt(confirm) == 2){
-                            System.out.println("\nLes Modifcations sont annulé .\n");
-                            isConfirmed = false;
+                        }else{
+                            System.out.println("\nEntrée invalide , Choisir une option parmi les suivantes : ");
                         }
+
+
                     }
                 }else {
                     System.out.println("votre memberShip ne correspond pas à memberShip emprunteur de ce livre .");
@@ -482,8 +611,7 @@ public class Navigator {
             System.out.println("Il n'existe aucun livre correspondant au l'isbn que vous avez fourni .");
 
         }
-        System.out.print("\n-> Cliquez sur n'importe quelle touche pour revenir  au menu .");
-        scanner.nextLine();
+       Helpers.backToMenu(scanner);
 
     }
 
@@ -492,53 +620,17 @@ public class Navigator {
         System.out.printf("""
                 \nBienvenue à la Bibliothèque Nationale, l'endroit où la connaissance prend vie.
                 Voici les statistiques actuelles de notre bibliothèque :
-                                
-                Total des livres disponibles : %s
-                Total des livres empruntés : %S
-                Total des livres perdus : %S
+                ---------------------------------------               
+                | Total des livres disponibles : %s    |
+                | Total des livres empruntés : %S      |
+                | Total des livres perdus : %S         |
+                --------------------------------------- 
+                
                 """, livreRepository.afficherLivresDisponible().size(),
                 livreRepository.afficherLivresEmpruntes().size(),
                 livreRepository.afficherLivresPerdu().size());
-
-        Path currentRelativePath = Paths.get("");
-        String dirname = currentRelativePath.toAbsolutePath().toString();
-
-        Timestamp ts = new Timestamp(System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        //System.out.println("Time : "+ sdf.format(timestamp).replaceAll("\\s+",""));
-        String time;
-        time = sdf.format(ts).replaceAll("\\s+","").replaceAll(":", "_");
-        try {
-
-            File file = new File(dirname+"/src/statistiques/"+ time +".txt");
-            if (file.createNewFile()) {
-                try {
-                    FileWriter myWriter = new FileWriter(dirname+"/src/statistiques/"+ time +".txt");
-                    String s = "\nBienvenue à la Bibliothèque Nationale, l'endroit où la connaissance prend vie." +
-                            "\nVoici les statistiques actuelles de notre bibliothèque : " +
-                            "\nTotal des livres disponibles : " + livreRepository.afficherLivresDisponible().size() +  " ." +
-                            "\nTotal des livres empruntés : " + livreRepository.afficherLivresEmpruntes().size() +  " ."+
-                            "\nTotal des livres perdus : "+ livreRepository.afficherLivresPerdu().size() + " ." ;
-
-                    myWriter.write(s);
-                    myWriter.close();
-                    System.out.println("un nouveau fichier de statistiques a été généré : " + file.getName());
-                } catch (IOException e) {
-                    System.out.println("Une erreur s'est produite.");
-                    e.printStackTrace();
-                }
-            } else {
-                System.out.println("Fichier déjà existant .");
-            }
-        } catch (IOException e) {
-            System.out.println("Une erreur s'est produite.");
-            e.printStackTrace();
-        }
-
-
-
-
-
+        livreRepository.genererStatistiques();
+        Helpers.backToMenu(scanner);
     }
 
     public void afficherList(ArrayList<Livre> livres, String status)  throws SQLException{
